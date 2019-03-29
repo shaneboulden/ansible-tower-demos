@@ -1,0 +1,29 @@
+- hosts: all
+  become: yes
+  
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+
+    - name: configure firewalld
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
+
+    - name: template out the index file
+      template:
+        src: index.html.j2
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+        enabled: yes
